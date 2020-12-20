@@ -10,8 +10,6 @@ export interface TokenPayload {
   role: string
 }
 
-console.log(jwt.decode(cookie.get('token')));
-
 export const isAuthenticated = (): boolean => !!jwt.decode(cookie.get('token'));
 
 export const getTokenData = ():TokenPayload => {
@@ -25,9 +23,8 @@ export const getTokenData = ():TokenPayload => {
 };
 
 export const isAdmin = (): boolean => {
-  const admin: boolean = true;
   const token = cookie.get('token');
   const data = jwt.decode(token);
-  console.log(data);
-  return admin;
+  if(data.role === 'Admin') return true;
+  else return false;
 }

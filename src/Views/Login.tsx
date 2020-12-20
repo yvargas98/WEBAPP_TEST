@@ -1,7 +1,7 @@
 import { FC, FormEvent, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Helmet } from "react-helmet";
-import company from './API/company';
+import company from '../API/company';
 import cookie from 'js-cookie';
 
 const LoginView: FC = () => {

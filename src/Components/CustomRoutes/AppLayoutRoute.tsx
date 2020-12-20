@@ -1,6 +1,6 @@
-import {
-  Route, Redirect, RouteProps, NavLink, Link,
-} from 'react-router-dom';
+import React from 'react';
+import { Navbar, Nav } from 'react-bootstrap';
+import { Route, Redirect, RouteProps } from 'react-router-dom';
 
 import { isAuthenticated, isAdmin } from '../../Util/validations';
 
@@ -31,38 +31,23 @@ const PrivateRoute = (props: RouteProps) => {
   }
   return (
     <div>
-      <nav className="navbar navbar-dark bg-dark">
-        <div className="container-fluid">
-          <div className="collapse navbar-collapse" id="navbarNavDropdown">
-            <ul className="navbar-nav">
-              <li className="nav-item">
-                <NavLink 
-                  activeClassName="nav-link active"
-                  to="/Posts"
-                >Posts</NavLink>
-                {/*<a className="nav-link active" aria-current="page" href="#">Home</a>*/}
-              </li>
-              <li className="nav-item">
-                <NavLink
-                  activeClassName="nav-link"
-                  to="/Categories"
-                ></NavLink>
-                {/*<a className="nav-link" href="#">Features</a>*/}
-              </li>
-              {
-                isAdmin() && 
-                <li className="nav-item">
-                  <NavLink
-                    activeClassName="nav-link"
-                    to="/Users"
-                  ></NavLink>
-                  {/*<a className="nav-link" href="#">Pricing</a>*/}
-                </li>
-              }
-            </ul>
-          </div>
-        </div>
-      </nav>
+      <Navbar collapseOnSelect expand="lg" bg="primary" variant="dark">
+        <Navbar.Brand href="/Posts">Company</Navbar.Brand>
+        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+        <Navbar.Collapse id="responsive-navbar-nav">
+          <Nav className="mr-auto">
+            <Nav.Link href="/Posts">Posts</Nav.Link>
+            <Nav.Link href="/Categories">Categories</Nav.Link>
+            {
+              isAdmin() && 
+                <Nav.Link href="/Users">Users</Nav.Link>
+            }
+          </Nav>
+          <Nav>
+            <Nav.Link href="/logout">LogOut</Nav.Link>
+          </Nav>
+        </Navbar.Collapse>
+      </Navbar>
       <Route
         component={component}
         exact={exact}

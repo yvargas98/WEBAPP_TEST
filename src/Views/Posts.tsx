@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Jumbotron, Button, Container, Modal, Form, Col } from 'react-bootstrap';
+import { Jumbotron, Button, Container, Modal, Form, Col, Alert } from 'react-bootstrap';
 import { RouteProps, useHistory } from 'react-router-dom';
 import company from './../API/company';
 import { isAdminOrEditor } from '../Util/validations';
@@ -26,20 +26,27 @@ const Posts: any = (props: RouteProps) => {
   const [showModalDelete, setShowModalDelete] = useState<boolean>(false);
   
   const [showModalError, setShowModalError] = useState<boolean>(false);
+  const [showAlertRequired, setShowAlertRequired] = useState<boolean>(false);
 
   const createPost = () => {
-    company.post('/posts', {
-      title,
-      description,
-    }).then(()=> {
-      setShowModalCreate(false);
-      setLoading(true);
-      setTitle(""); setDescription("");
-    }).catch(() => {
-      setShowModalCreate(false);
-      setShowModalError(true);
-      setTitle(""); setDescription("");
-    })
+    if(title && description){
+      company.post('/posts', {
+        title,
+        description,
+      }).then(()=> {
+        setShowModalCreate(false);
+        setShowAlertRequired(false);
+        setLoading(true);
+        setTitle(""); setDescription("");
+      }).catch(() => {
+        setShowModalCreate(false);
+        setShowModalError(true);
+        setTitle(""); setDescription("");
+      });
+    }
+    else{
+      setShowAlertRequired(true);
+    }
   }
 
   const deletePost = () => {
@@ -49,18 +56,24 @@ const Posts: any = (props: RouteProps) => {
   }
 
   const editPost = () => {
-    company.put(`/posts/${selectedId}`,{
-      title: selectedTitle,
-      description: selectedDescription
-    }).then(()=> {
-      setShowModalEdit(false);
-      setLoading(true);
-      setTitle(""); setDescription("");
-    }).catch(()=> {
-      setShowModalEdit(false);
-      setShowModalError(true);
-      setTitle(""); setDescription("");
-    })
+    if (selectedTitle && selectedDescription) {
+      company.put(`/posts/${selectedId}`,{
+        title: selectedTitle,
+        description: selectedDescription
+      }).then(()=> {
+        setShowModalEdit(false);
+        setShowAlertRequired(false);
+        setLoading(true);
+        setTitle(""); setDescription("");
+      }).catch(()=> {
+        setShowModalEdit(false);
+        setShowModalError(true);
+        setTitle(""); setDescription("");
+      });
+    }
+    else {
+      setShowAlertRequired(true);
+    }
   }
 
   useEffect(()=> {
@@ -116,10 +129,11 @@ const Posts: any = (props: RouteProps) => {
               <Form.Control as="textarea" rows={4} placeholder="Description" required={true} value={selectedDescription}
                 onChange={e=>setSelectedDescription(e.target.value)}/>
             </Col>
-          </Form>
+          </Form><br/>
+          { showAlertRequired && <Alert variant="warning">All fields are required.</Alert> }
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={()=> setShowModalEdit(false)}>Cancel</Button>
+          <Button variant="secondary" onClick={()=> {setShowModalEdit(false); setShowAlertRequired(false);}}>Cancel</Button>
           <Button variant="primary" onClick={()=> {editPost()}}>Update</Button>
         </Modal.Footer>
       </Modal>
@@ -147,10 +161,11 @@ const Posts: any = (props: RouteProps) => {
                 onChange={e=>setDescription(e.target.value)}
               />
             </Col>
-          </Form>
+          </Form><br/>
+          { showAlertRequired && <Alert variant="warning">All fields are required.</Alert> }
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={()=> setShowModalCreate(false)}>Cancel</Button>
+          <Button variant="secondary" onClick={()=> {setShowModalCreate(false); setShowAlertRequired(false);}}>Cancel</Button>
           <Button variant="primary" onClick={()=> {createPost()}}>Create Post</Button>
         </Modal.Footer>
       </Modal>

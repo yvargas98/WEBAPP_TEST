@@ -1,7 +1,11 @@
 import { FC } from 'react';
+import { Helmet } from 'react-helmet';
 
 const NotFound: FC = () => (
     <div className="main">
+        <Helmet>
+            <link rel="stylesheet" href="notFound.css"/>
+        </Helmet>
         <div>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 355">
         <g id="ocean">

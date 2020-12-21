@@ -1,5 +1,5 @@
 import React, { useState, useEffect, FC } from 'react';
-import { Container, Jumbotron, Button, Table, Modal, Form, Col } from 'react-bootstrap';
+import { Container, Jumbotron, Button, Table, Modal, Form, Col, Alert } from 'react-bootstrap';
 import company from './../API/company';
 import { isAdminOrEditor } from '../Util/validations';
 
@@ -23,20 +23,27 @@ const Categories: FC = () => {
   const [showModalDelete, setShowModalDelete] = useState<boolean>(false);
   
   const [showModalError, setShowModalError] = useState<boolean>(false);
+  const [showAlertRequired, setShowAlertRequired] = useState<boolean>(false);
 
   const createCategory = () => {
-    company.post('/categories', {
-      name,
-      description
-    }).then(()=> {
-      setShowModalCreate(false);
-      setLoading(true);
-      setName(""); setDescription("");
-    }).catch(() => {
-      setShowModalCreate(false);
-      setShowModalError(true);
-      setName(""); setDescription("");
-    })
+    if(name && description) {
+      company.post('/categories', {
+        name,
+        description
+      }).then(()=> {
+        setShowModalCreate(false);
+        setShowAlertRequired(false);
+        setLoading(true);
+        setName(""); setDescription("");
+      }).catch(() => {
+        setShowModalCreate(false);
+        setShowModalError(true);
+        setName(""); setDescription("");
+      });
+    }
+    else {
+      setShowAlertRequired(true);
+    }
   }
 
   const deleteCategory = () => {
@@ -46,18 +53,24 @@ const Categories: FC = () => {
   }
 
   const editCategory = () => {
-    company.put(`/categories/${selectedId}`,{
-      name: selectedName,
-      description: selectedDescription
-    }).then(()=> {
-      setShowModalEdit(false);
-      setLoading(true);
-      setName(""); setDescription("");
-    }).catch(()=> {
-      setShowModalEdit(false);
-      setShowModalError(true);
-      setName(""); setDescription("");
-    })
+    if(selectedName && selectedDescription) {
+      company.put(`/categories/${selectedId}`,{
+        name: selectedName,
+        description: selectedDescription
+      }).then(()=> {
+        setShowModalEdit(false);
+        setShowAlertRequired(false);
+        setLoading(true);
+        setName(""); setDescription("");
+      }).catch(()=> {
+        setShowModalEdit(false);
+        setShowModalError(true);
+        setName(""); setDescription("");
+      });
+    }
+    else{
+      setShowAlertRequired(true);
+    }
   }
 
   useEffect(()=> {
@@ -123,10 +136,11 @@ const Categories: FC = () => {
               <Form.Control as="textarea" rows={4} placeholder="Description" required={true} value={selectedDescription}
                 onChange={e=>setSelectedDescription(e.target.value)}/>
             </Col>
-          </Form>
+          </Form><br/>
+          { showAlertRequired && <Alert variant="warning">All fields are required.</Alert> }
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={()=> setShowModalEdit(false)}>Cancel</Button>
+          <Button variant="secondary" onClick={()=> {setShowModalEdit(false); setShowAlertRequired(false);}}>Cancel</Button>
           <Button variant="primary" onClick={()=> {editCategory()}}>Update</Button>
         </Modal.Footer>
       </Modal>
@@ -153,10 +167,11 @@ const Categories: FC = () => {
                 onChange={e=>setDescription(e.target.value)}
               />
             </Col>
-          </Form>
+          </Form><br/>
+          { showAlertRequired && <Alert variant="warning">All fields are required.</Alert> }
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={()=> setShowModalCreate(false)}>Cancel</Button>
+          <Button variant="secondary" onClick={()=> {setShowModalCreate(false); setShowAlertRequired(false);}}>Cancel</Button>
           <Button variant="primary" onClick={()=> {createCategory()}}>Create Category</Button>
         </Modal.Footer>
       </Modal>

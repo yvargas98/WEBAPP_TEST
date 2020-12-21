@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Col, Container, Form, Jumbotron, Modal, Table } from 'react-bootstrap';
+import { Alert, Button, Col, Container, Form, Jumbotron, Modal, Table } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
 import company from './../API/company';
 
@@ -24,23 +24,30 @@ const Users: any = () => {
   const [selectedRole, setSelectedRole] = useState<string>("");
   const [selectedId, setSelectedId] = useState<number>();
   const [showModalDelete, setShowModalDelete] = useState<boolean>(false);
+  const [showAlertRequired, setShowAlertRequired] = useState<boolean>(false);
   
   const [showModalError, setShowModalError] = useState<boolean>(false);
 
   const createUser = () => {
-    company.post('/users', {
-      email,
-      password,
-      role
-    }).then(()=> {
-      setShowModalCreate(false);
-      setLoading(true);
-      setEmail(""); setPassword(""); setRole("");
-    }).catch(() => {
-      setShowModalCreate(false);
-      setShowModalError(true);
-      setEmail(""); setPassword(""); setRole("");
-    })
+    if(email && password && role){
+      company.post('/users', {
+        email,
+        password,
+        role
+      }).then(()=> {
+        setShowModalCreate(false);
+        setShowAlertRequired(false);
+        setLoading(true);
+        setEmail(""); setPassword(""); setRole("");
+      }).catch(() => {
+        setShowModalCreate(false);
+        setShowModalError(true);
+        setEmail(""); setPassword(""); setRole("");
+      });
+    }
+    else{
+      setShowAlertRequired(true);
+    }
   }
 
   const deleteUser = () => {
@@ -50,18 +57,24 @@ const Users: any = () => {
   }
 
   const editUser = () => {
-    company.put(`/users/${selectedId}`,{
-      email: selectedEmail,
-      role: selectedRole
-    }).then(()=> {
-      setShowModalEdit(false);
-      setLoading(true);
-      setSelectedEmail(""); setSelectedRole("");
-    }).catch(()=> {
-      setShowModalEdit(false);
-      setShowModalError(true);
-      setSelectedEmail(""); setSelectedRole("");
-    })
+    if(selectedEmail && selectedRole){
+      company.put(`/users/${selectedId}`,{
+        email: selectedEmail,
+        role: selectedRole
+      }).then(()=> {
+        setShowModalEdit(false);
+        setShowAlertRequired(false);
+        setLoading(true);
+        setSelectedEmail(""); setSelectedRole("");
+      }).catch(()=> {
+        setShowModalEdit(false);
+        setShowModalError(true);
+        setSelectedEmail(""); setSelectedRole("");
+      });
+    }
+    else{
+      setShowAlertRequired(true);
+    }
   }
 
   useEffect(()=> {
@@ -130,13 +143,18 @@ const Users: any = () => {
               <Form.Control placeholder="User Email" required={true} value={selectedEmail} 
                 onChange={e=>setSelectedEmail(e.target.value)}/>
               <Form.Label>User Role</Form.Label>
-              <Form.Control as="select" required={true} value={selectedRole}
-                onChange={e=>setSelectedRole(e.target.value)}/>
+              <Form.Control as="select" required={true} defaultValue={selectedRole}
+                onChange={e=>setSelectedRole(e.target.value)}>
+                <option>Admin</option>
+                <option>Editor</option>
+                <option>Viewer</option>
+              </Form.Control>
             </Col>
-          </Form>
+          </Form><br/>
+          { showAlertRequired && <Alert variant="warning">All fields are required.</Alert> }
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={()=> setShowModalEdit(false)}>Cancel</Button>
+          <Button variant="secondary" onClick={()=> {setShowModalEdit(false); setShowAlertRequired(false);}}>Cancel</Button>
           <Button variant="primary" onClick={()=> {editUser()}}>Update</Button>
         </Modal.Footer>
       </Modal>
@@ -165,18 +183,19 @@ const Users: any = () => {
               <Form.Label>User Role</Form.Label>
               <Form.Control as="select"
                 required={true}
-                value={role}
                 onChange={e=>setRole(e.target.value)}
-              >
+              > 
+                <option disabled selected>Choose an Option</option>
                 <option>Admin</option>
                 <option>Editor</option>
                 <option>Viewer</option>
               </Form.Control>
             </Col>
-          </Form>
+          </Form><br/>
+          { showAlertRequired && <Alert variant="warning">All fields are required.</Alert> }
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={()=> setShowModalCreate(false)}>Cancel</Button>
+          <Button variant="secondary" onClick={()=> {setShowModalCreate(false); setShowAlertRequired(false);}}>Cancel</Button>
           <Button variant="primary" onClick={()=> {createUser()}}>Create User</Button>
         </Modal.Footer>
       </Modal>

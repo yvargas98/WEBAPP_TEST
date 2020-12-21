@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Col, Container, Form, Jumbotron, Modal, Table } from 'react-bootstrap';
+import { useHistory } from 'react-router-dom';
 import company from './../API/company';
 
 type User = {
@@ -12,6 +13,7 @@ type User = {
 const Users: any = () => {
   const [usersData, setUsersData] = useState<User[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const history = useHistory();
 
   const [showModalCreate, setShowModalCreate] = useState<boolean>(false);
   const [email, setEmail] = useState("");
@@ -66,17 +68,19 @@ const Users: any = () => {
     company('/users').then(({data}) => {
       setUsersData(data);
       setLoading(false);
+    }).catch(()=>{
+      history.push('/403');
     });
   },[loading]);
 
   return !loading && (
     <Container style={{ marginTop: '30px' }}>
       <Jumbotron>
-        <h1>Manage User</h1>
         <Button 
           variant="secondary" 
           style={{ float: 'right', margin: '20px' }}
-          onClick={()=> setShowModalCreate(true)}>Add a User</Button>
+          onClick={()=> setShowModalCreate(true)}>Add a New User</Button>
+        <h1>Manage User</h1>
         <Table responsive striped bordered hover style={{backgroundColor:'white'}}>
           <thead>
             <tr>
@@ -126,7 +130,7 @@ const Users: any = () => {
               <Form.Control placeholder="User Email" required={true} value={selectedEmail} 
                 onChange={e=>setSelectedEmail(e.target.value)}/>
               <Form.Label>User Role</Form.Label>
-              <Form.Control placeholder="User Role" required={true} value={selectedRole}
+              <Form.Control as="select" required={true} value={selectedRole}
                 onChange={e=>setSelectedRole(e.target.value)}/>
             </Col>
           </Form>
@@ -150,21 +154,24 @@ const Users: any = () => {
                 required={true}
                 value={email}
                 onChange={e=>setEmail(e.target.value)}              
-              />
+              /><br/>
               <Form.Label>User Password</Form.Label>
               <Form.Control 
                 placeholder="User Password" 
                 required={true}
                 value={password}
                 onChange={e=>setPassword(e.target.value)}
-              />
+              /><br/>
               <Form.Label>User Role</Form.Label>
-              <Form.Control 
-                placeholder="User Role" 
+              <Form.Control as="select"
                 required={true}
                 value={role}
                 onChange={e=>setRole(e.target.value)}
-              />
+              >
+                <option>Admin</option>
+                <option>Editor</option>
+                <option>Viewer</option>
+              </Form.Control>
             </Col>
           </Form>
         </Modal.Body>

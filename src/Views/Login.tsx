@@ -11,7 +11,6 @@ const LoginView: FC = () => {
   const [loading, setLoading] = useState(false);
 
   const history = useHistory();
-  //window.scrollTo(0, 0);
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {

@@ -28,3 +28,10 @@ export const isAdmin = (): boolean => {
   if(data.role === 'Admin') return true;
   else return false;
 }
+
+export const isAdminOrEditor = (): boolean => {
+  const token = cookie.get('token');
+  const data = jwt.decode(token);
+  if(data.role === 'Admin' || data.role === 'Editor') return true;
+  else return false;
+}

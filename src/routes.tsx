@@ -9,7 +9,8 @@ import Posts from './Views/Posts';
 import Unauthorized from './Views/Unauthorized';
 import NotFound404 from './Views/NotFound404';
 import Categories from './Views/Categories';
-import Users from './Views/Users';
+import Users from './Views/Users'
+import CreateUser from './Components/Users/CreateUser';
 
 const Routes: React.FC = () => (
   <Switch>
@@ -22,6 +23,7 @@ const Routes: React.FC = () => (
     <AppRoute path="/Posts" exact component={Posts}/>
     <AppRoute path="/Categories" exact component={Categories}/>
     <AppRoute path="/Users" exact component={Users}/>
+    <AppRoute path="/CreateUser" exact component={CreateUser}/>
 
     <Route path="*" exact component={NotFound404}/>
   </Switch>

@@ -22,6 +22,14 @@ const Posts: any = (props: RouteProps) => {
 
   return !loading && (
     <div>
+      <Jumbotron>
+        <h1>Welcome to our Posts!</h1>
+        <p>
+          You can find posts on varios topics. Enjoy it!
+          <Button variant="secondary" 
+            style={{ float: 'right', margin: '20px', marginBottom:'20px'}}>Create New Post</Button>
+        </p>
+      </Jumbotron>
       {
         postsData.map( (post) => (
             <Jumbotron>
